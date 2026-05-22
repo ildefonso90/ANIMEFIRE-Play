@@ -1,0 +1,32 @@
+#custom-animefire-player {
+  position: fixed;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  background-color: #111;
+  color: #fff;
+  z-index: 999999;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#custom-animefire-player h2 {
+  margin-top: 0;
+  color: #ff5722;
+}
+
+#custom-animefire-player button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
