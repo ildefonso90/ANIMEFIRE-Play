@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AnimeFire Player</title>
+    <link rel="stylesheet" href="player.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="watch-area" aria-label="Player">
+        <header class="topbar">
+          <div>
+            <p class="kicker">AnimeFire Player</p>
+            <h1 id="anime-title">Carregando anime...</h1>
+            <p id="episode-title" class="episode-title">Preparando episodios</p>
+          </div>
+          <a id="open-original" class="original-link" target="_blank" rel="noopener noreferrer">Abrir original</a>
+        </header>
+
+        <div class="video-shell">
+          <video id="video" controls playsinline preload="metadata"></video>
+          <div id="video-placeholder" class="video-placeholder">
+            <strong>Escolha um episodio</strong>
+            <span>A lista aparece assim que a extensao le a pagina do anime.</span>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button id="previous-episode" class="icon-button" type="button" title="Episodio anterior">&lsaquo;</button>
+          <button id="next-episode" class="icon-button" type="button" title="Proximo episodio">&rsaquo;</button>
+
+          <label class="select-label">
+            <span>Qualidade</span>
+            <select id="quality-select"></select>
+          </label>
+
+          <label class="select-label">
+            <span>Velocidade</span>
+            <select id="rate-select">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+              <option value="1.75">1.75x</option>
+              <option value="2">2x</option>
+            </select>
+          </label>
+
+          <label class="toggle-label">
+            <input id="autoplay-toggle" type="checkbox" checked>
+            <span>Autoplay</span>
+          </label>
+        </div>
+
+        <p id="status" class="status" role="status"></p>
+      </section>
+
+      <aside class="episode-panel" aria-label="Episodios">
+        <div class="poster-wrap">
+          <img id="poster" alt="">
+        </div>
+        <div class="panel-header">
+          <h2>Episodios</h2>
+          <span id="episode-count">0</span>
+        </div>
+        <div id="episode-list" class="episode-list"></div>
+      </aside>
+    </main>
+
+    <script src="player.js"></script>
+  </body>
+</html>

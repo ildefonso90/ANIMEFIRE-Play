@@ -5,12 +5,18 @@
     "action": {
       "type": "modifyHeaders",
       "requestHeaders": [
-        { "header": "Referer", "operation": "set", "value": "https://animefire.io/" }
+        {
+          "header": "Referer",
+          "operation": "set",
+          "value": "https://animefire.io/"
+        }
       ]
     },
     "condition": {
-      "urlFilter": "*",
-      "domains": ["lightspeedst.net"]
+      "urlFilter": "||lightspeedst.net/",
+      "resourceTypes": [
+        "media"
+      ]
     }
   }
 ]

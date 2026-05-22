@@ -1,32 +1,50 @@
-#custom-animefire-player {
-  position: fixed;
-  top: 10%;
-  left: 10%;
-  width: 80%;
-  height: 80%;
-  background-color: #111;
-  color: #fff;
-  z-index: 999999;
+#af-player-launcher {
+  align-items: center;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-#custom-animefire-player h2 {
-  margin-top: 0;
-  color: #ff5722;
-}
-
-#custom-animefire-player button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 5px 10px;
+  bottom: 22px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+  color: #f8fafc;
   cursor: pointer;
-  border-radius: 4px;
+  display: inline-flex;
+  font: 700 14px/1.1 Arial, sans-serif;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  position: fixed;
+  right: 22px;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+  z-index: 2147483647;
+}
+
+#af-player-launcher:hover {
+  background: #172033;
+  border-color: rgba(33, 211, 255, 0.8);
+  transform: translateY(-1px);
+}
+
+#af-player-launcher:active {
+  transform: translateY(0);
+}
+
+#af-player-launcher .af-player-launcher-icon {
+  align-items: center;
+  background: #21d3ff;
+  border-radius: 50%;
+  color: #061018;
+  display: inline-flex;
+  font-size: 12px;
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+@media (max-width: 620px) {
+  #af-player-launcher {
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    justify-content: center;
+  }
 }

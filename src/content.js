@@ -1,23 +1,45 @@
-// Content script for AnimeFire
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "open_player") {
-    // Basic logic to find the video player and open it in a custom window/modal
-    console.log("AnimeFire Player activation message received.");
-    
-    // Example: Create a rudimentary mock UI for a custom player representation
-    const playerContainer = document.createElement("div");
-    playerContainer.id = "custom-animefire-player";
-    
-    const title = document.createElement("h2");
-    title.innerText = "AnimeFire Player - Modo Organizado";
-    
-    const closeButton = document.createElement("button");
-    closeButton.innerText = "Fechar";
-    closeButton.onclick = () => playerContainer.remove();
-    
-    playerContainer.appendChild(title);
-    playerContainer.appendChild(closeButton);
-    
-    document.body.appendChild(playerContainer);
+(function initAnimeFireLauncher() {
+  const BUTTON_ID = "af-player-launcher";
+  const PATH_PATTERN = /^\/animes\/[^/]+(?:\/\d+)?$/;
+
+  function shouldShow() {
+    return location.hostname.endsWith("animefire.io") && PATH_PATTERN.test(location.pathname);
   }
-});
+
+  function createButton() {
+    if (!shouldShow() || document.getElementById(BUTTON_ID)) {
+      return;
+    }
+
+    const button = document.createElement("button");
+    button.id = BUTTON_ID;
+    button.type = "button";
+    button.title = "Abrir este anime no player da extensao";
+    button.innerHTML = '<span class="af-player-launcher-icon">AF</span><span>Abrir player</span>';
+
+    button.addEventListener("click", () => {
+      chrome.runtime.sendMessage({
+        type: "AF_OPEN_PLAYER",
+        url: location.href
+      });
+    });
+
+    document.documentElement.appendChild(button);
+  }
+
+  createButton();
+
+  let previousPath = location.pathname;
+  const observer = new MutationObserver(() => {
+    if (previousPath !== location.pathname) {
+      previousPath = location.pathname;
+      document.getElementById(BUTTON_ID)?.remove();
+    }
+    createButton();
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
