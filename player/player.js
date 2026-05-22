@@ -318,11 +318,7 @@ async function startEpisodeDownload(episode) {
     chrome.downloads.download({
       url: targetSource.src,
       filename: path,
-      conflictAction: "overwrite",
-      headers: [
-        { name: "Referer", value: "https://animefire.io/" },
-        { name: "Origin", value: "https://animefire.io" }
-      ]
+      conflictAction: "overwrite"
     }, (dlId) => {
       dlManager.active.delete(tempId);
       if (chrome.runtime.lastError || !dlId) {
