@@ -14,9 +14,7 @@
     },
     "condition": {
       "urlFilter": "||lightspeedst.net/",
-      "resourceTypes": [
-        "media"
-      ]
+      "resourceTypes": ["main_frame", "sub_frame", "xmlhttprequest", "media", "other"]
     }
   }
 ]
