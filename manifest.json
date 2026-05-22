@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "AnimeFire Player",
+  "version": "0.1.0",
+  "description": "Abre animes do AnimeFire em uma janela propria com lista de episodios organizada.",
+  "permissions": [
+    "activeTab",
+    "declarativeNetRequestWithHostAccess",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://animefire.io/*",
+    "https://www.animefire.io/*",
+    "https://lightspeedst.net/*",
+    "https://*.lightspeedst.net/*"
+  ],
+  "action": {
+    "default_title": "Abrir AnimeFire Player"
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "animefire_media_headers",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://animefire.io/animes/*",
+        "https://www.animefire.io/animes/*"
+      ],
+      "css": [
+        "src/content.css"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://animefire.io https://www.animefire.io; img-src https: data:; media-src https: blob:;"
+  }
+}
