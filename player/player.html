@@ -30,30 +30,32 @@
           <button id="previous-episode" class="icon-button" type="button" title="Episodio anterior">&lsaquo;</button>
           <button id="next-episode" class="icon-button" type="button" title="Proximo episodio">&rsaquo;</button>
 
-          <label class="select-label">
-            <span>Qualidade</span>
-            <select id="quality-select"></select>
-          </label>
+          <button id="btn-dl-current" class="icon-button" type="button" title="Baixar este episodio">⬇️</button>
+          <button id="btn-dl-all" class="icon-button" type="button" title="Baixar todos os episodios">⏬</button>
+          <button id="btn-dl-settings" class="icon-button" type="button" title="Configurações de download">⚙️</button>
 
           <label class="select-label">
-            <span>Velocidade</span>
+            <span>Qual</span>
+            <select id="quality-select"></select>
+          </label>
+          <label class="select-label">
+            <span>Veloc</span>
             <select id="rate-select">
-              <option value="0.5">0.5x</option>
-              <option value="1" selected>Normal</option>
+              <option value="1" selected>1x</option>
               <option value="1.25">1.25x</option>
               <option value="1.5">1.5x</option>
-              <option value="1.75">1.75x</option>
               <option value="2">2x</option>
             </select>
           </label>
-
-          <label class="toggle-label">
+          <label class="toggle-label" title="Autoplay">
             <input id="autoplay-toggle" type="checkbox" checked>
-            <span>Autoplay</span>
+            <span>Auto</span>
           </label>
         </div>
-
-        <p id="status" class="status" role="status"></p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+          <p id="status" class="status" role="status" style="margin: 8px 0 0;"></p>
+          <div id="dl-status-ui" class="dl-status-ui"></div>
+        </div>
       </section>
 
       <aside class="episode-panel" aria-label="Episodios">
@@ -68,6 +70,39 @@
       </aside>
     </main>
 
+    <div id="dl-modal" class="modal is-hidden">
+      <div class="modal-content">
+        <h2>Configurações de Download</h2>
+        
+        <label class="select-label" style="margin-bottom: 16px; width: 100%; display: flex; justify-content: space-between;">
+          <span>Qualidade Preferida</span>
+          <select id="dl-quality-select" style="min-width: 150px;">
+            <option value="best" selected>Melhor Disponível</option>
+            <option value="worst">Menor Disponível</option>
+          </select>
+        </label>
+
+        <label class="select-label" style="margin-bottom: 16px; width: 100%; display: flex; justify-content: space-between;">
+          <span>Downloads Simultâneos</span>
+          <select id="dl-concurrent-select" style="min-width: 150px;">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+
+        <label class="toggle-label" style="width: 100%; margin-bottom: 24px;">
+          <input id="dl-subfolder-toggle" type="checkbox" checked>
+          <span>Criar pasta com o título do anime</span>
+        </label>
+        
+        <div class="modal-actions" style="display: flex; justify-content: flex-end;">
+          <button id="dl-modal-close" class="icon-button" style="width: auto; padding: 0 16px; font-size: 14px;">Salvar e Fechar</button>
+        </div>
+      </div>
+    </div>
     <script src="player.js"></script>
   </body>
 </html>

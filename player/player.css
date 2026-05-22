@@ -195,6 +195,41 @@ select {
   padding: 0 12px;
 }
 
+.modal {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 9999;
+}
+.modal.is-hidden {
+  display: none;
+}
+.modal-content {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  padding: 24px;
+  width: 90%;
+}
+.modal-content h2 {
+  font-size: 20px;
+  margin: 0 0 20px;
+}
+
+.dl-status-ui {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: bold;
+}
+
 .status {
   color: var(--muted);
   min-height: 20px;

@@ -19,7 +19,16 @@ const els = {
   next: document.getElementById("next-episode"),
   quality: document.getElementById("quality-select"),
   rate: document.getElementById("rate-select"),
-  autoplay: document.getElementById("autoplay-toggle")
+  autoplay: document.getElementById("autoplay-toggle"),
+  dlCurrent: document.getElementById("btn-dl-current"),
+  dlAll: document.getElementById("btn-dl-all"),
+  dlSettings: document.getElementById("btn-dl-settings"),
+  dlStatusUi: document.getElementById("dl-status-ui"),
+  dlModal: document.getElementById("dl-modal"),
+  dlModalClose: document.getElementById("dl-modal-close"),
+  dlQualitySelect: document.getElementById("dl-quality-select"),
+  dlConcurrentSelect: document.getElementById("dl-concurrent-select"),
+  dlSubfolderToggle: document.getElementById("dl-subfolder-toggle")
 };
 
 function setStatus(message, isError = false) {
@@ -255,6 +264,110 @@ function loadSibling(offset) {
   }
 }
 
+// ==================== DOWNLOAD MANAGER ====================
+const dlManager = {
+  queue: [],
+  active: new Set(),
+  config: {
+    quality: localStorage.getItem("afp-dl-qual") || "best",
+    concurrent: Number(localStorage.getItem("afp-dl-conc")) || 3,
+    subfolder: localStorage.getItem("afp-dl-folder") !== "false"
+  }
+};
+
+function updateDlUI() {
+  if (dlManager.queue.length === 0 && dlManager.active.size === 0) {
+    els.dlStatusUi.textContent = "";
+  } else {
+    els.dlStatusUi.textContent = `⬇️ Baixando: ${dlManager.active.size} | Fila: ${dlManager.queue.length}`;
+  }
+}
+
+function processDlQueue() {
+  while (dlManager.active.size < dlManager.config.concurrent && dlManager.queue.length > 0) {
+    const episode = dlManager.queue.shift();
+    startEpisodeDownload(episode);
+  }
+  updateDlUI();
+}
+
+async function startEpisodeDownload(episode) {
+  const tempId = "fetch-" + Date.now() + Math.random();
+  dlManager.active.add(tempId);
+  updateDlUI();
+
+  try {
+    const sources = await fetchEpisodeSources(episode);
+    if (!sources || sources.length === 0) throw new Error("Sem fontes");
+
+    let targetSource = sources[sources.length - 1]; // best
+    if (dlManager.config.quality === "worst") {
+      targetSource = sources[0];
+    }
+
+    const safeTitle = state.anime.title.replace(/[\\/:*?"<>|]/g, '').trim();
+    const safeEp = episode.label.replace(/[\\/:*?"<>|]/g, '').trim();
+    
+    let path = `${safeTitle} - ${safeEp}.mp4`;
+    if (dlManager.config.subfolder) {
+      path = `AnimeFire/${safeTitle}/${path}`;
+    } else {
+      path = `AnimeFire/${path}`;
+    }
+
+    chrome.downloads.download({
+      url: targetSource.src,
+      filename: path,
+      conflictAction: "overwrite"
+    }, (dlId) => {
+      dlManager.active.delete(tempId);
+      if (chrome.runtime.lastError || !dlId) {
+        console.error("DL Error:", chrome.runtime.lastError);
+        processDlQueue();
+      } else {
+        dlManager.active.add(dlId);
+        chrome.downloads.search({id: dlId}, (dls) => {
+            if (dls && dls.length > 0 && dls[0].state !== 'in_progress') {
+                dlManager.active.delete(dlId);
+                processDlQueue();
+            }
+        });
+      }
+      updateDlUI();
+    });
+  } catch (err) {
+    console.error("DL Fetch error:", err);
+    dlManager.active.delete(tempId);
+    processDlQueue();
+  }
+}
+
+chrome.downloads.onChanged.addListener((delta) => {
+  if (dlManager.active.has(delta.id)) {
+    if (delta.state && delta.state.current !== 'in_progress') {
+      dlManager.active.delete(delta.id);
+      updateDlUI();
+      processDlQueue();
+    }
+  }
+});
+
+function queueEpisode(episode) {
+  if (dlManager.queue.find(e => e.url === episode.url)) return;
+  dlManager.queue.push(episode);
+  processDlQueue();
+}
+
+function queueAll() {
+  state.episodes.forEach(ep => {
+    if (!dlManager.queue.find(e => e.url === ep.url)) {
+      dlManager.queue.push(ep);
+    }
+  });
+  processDlQueue();
+}
+// ==========================================================
+
 async function init() {
   try {
     const sourceUrl = getSourceUrl();
@@ -300,6 +413,38 @@ els.video.addEventListener("timeupdate", () => {
 els.video.addEventListener("ended", () => {
   if (els.autoplay.checked) {
     loadSibling(1);
+  }
+});
+
+els.dlCurrent.addEventListener("click", () => {
+  if (state.currentEpisode) queueEpisode(state.currentEpisode);
+});
+els.dlAll.addEventListener("click", () => {
+  if (state.episodes.length) queueAll();
+});
+els.dlSettings.addEventListener("click", () => {
+  els.dlQualitySelect.value = dlManager.config.quality;
+  els.dlConcurrentSelect.value = String(dlManager.config.concurrent);
+  els.dlSubfolderToggle.checked = dlManager.config.subfolder;
+  els.dlModal.classList.remove("is-hidden");
+});
+els.dlModalClose.addEventListener("click", () => {
+  dlManager.config.quality = els.dlQualitySelect.value;
+  dlManager.config.concurrent = Number(els.dlConcurrentSelect.value);
+  dlManager.config.subfolder = els.dlSubfolderToggle.checked;
+  
+  localStorage.setItem("afp-dl-qual", dlManager.config.quality);
+  localStorage.setItem("afp-dl-conc", dlManager.config.concurrent);
+  localStorage.setItem("afp-dl-folder", dlManager.config.subfolder);
+  
+  els.dlModal.classList.add("is-hidden");
+  processDlQueue(); // In case concurrent increased
+});
+
+window.addEventListener("beforeunload", (e) => {
+  if (dlManager.queue.length > 0) {
+    e.preventDefault();
+    e.returnValue = "";
   }
 });
 
